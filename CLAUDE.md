@@ -15,28 +15,32 @@ Agora is an ML-powered investment platform built on a microservices architecture
 - `Agora_SQL/` - Database schemas, migrations, and SQL code (separate Git repo)
 - `Agora_Documentation/` - Architecture docs, design specs, and planning (separate Git repo)
 
-**Trading Platform Repositories (to be created):**
+**Investment Platform Repositories (to be created):**
 
 *Infrastructure Repositories:*
-- `trading_platform-infrastructure/` - Core databases (TimescaleDB, PostgreSQL, Redis)
-- `trading_platform-kafka/` - Kafka cluster with Zookeeper, UI, Schema Registry
-- `trading_platform-rabbitmq/` - RabbitMQ cluster with Management UI
-- `trading_platform-monitoring/` - Prometheus, Grafana, Jaeger, Loki
-- `trading_platform-api-gateway/` - Kong/Traefik API Gateway
-- `trading_platform-mlflow/` - MLflow tracking server for ML models
+- `investment_platform-infrastructure/` - Core databases (TimescaleDB, PostgreSQL, Redis)
+- `investment_platform-kafka/` - Kafka cluster with Zookeeper, UI, Schema Registry
+- `investment_platform-rabbitmq/` - RabbitMQ cluster with Management UI
+- `investment_platform-monitoring/` - Prometheus, Grafana, Jaeger, Loki
+- `investment_platform-api-gateway/` - Kong/Traefik API Gateway
+- `investment_platform-mlflow/` - MLflow tracking server for ML models
+
+*Shared Library Repositories:*
+- `investment_platform-common/` - Python shared library (database, gRPC, logging, config)
+- `investment_platform-auth/` - Authentication library (OAuth 2.0, JWT, RBAC)
 
 *Microservice Repositories:*
-- `trading_platform-market-data/` - Python (FastAPI) - Market data ingestion
-- `trading_platform-analysis-engine/` - Python (FastAPI + ML) - Technical analysis & predictions
-- `trading_platform-portfolio-manager/` - C++23 - Portfolio & transaction management
-- `trading_platform-recommendation-engine/` - Python (FastAPI) - Investment recommendations
-- `trading_platform-notification-service/` - Node.js (NestJS) - Email & push notifications
-- `trading_platform-timeseries-analysis/` - Python (FastAPI + statsmodels) - Time series analysis & pattern detection
+- `investment_platform-market-data/` - Python (FastAPI) - Market data ingestion
+- `investment_platform-analysis-engine/` - Python (FastAPI + ML) - Technical analysis & predictions
+- `investment_platform-portfolio-manager/` - C++23 - Portfolio & transaction management
+- `investment_platform-recommendation-engine/` - Python (FastAPI) - Investment recommendations
+- `investment_platform-notification-service/` - Node.js (NestJS) - Email & push notifications
+- `investment_platform-timeseries-analysis/` - Python (FastAPI + statsmodels) - Time series analysis & pattern detection
 
 *Orchestration:*
-- `trading_platform-orchestration/` - Master documentation, startup scripts, architecture diagrams
+- `investment_platform-orchestration/` - Master documentation, startup scripts, architecture diagrams
 
-**Shared Docker Network:** `trading_platform_network` - All services connect to this for inter-service communication
+**Shared Docker Network:** `investment_platform_network` - All services connect to this for inter-service communication
 
 ## Database Setup
 
@@ -306,19 +310,19 @@ Each component will be in its own repository with:
 - Own CI/CD pipeline
 - Own README and documentation
 
-**Repository naming convention:** `trading_platform-<component-name>`
+**Repository naming convention:** `investment_platform-<component-name>`
 
 **When making changes:**
 - Database schemas/migrations → `Agora_SQL/`
 - Design docs, API specs → `Agora_Documentation/`
-- Infrastructure setup → `trading_platform-infrastructure/`, `trading_platform-kafka/`, etc.
-- Service code → `trading_platform-<service-name>/`
+- Infrastructure setup → `investment_platform-infrastructure/`, `investment_platform-kafka/`, etc.
+- Service code → `investment_platform-<service-name>/`
 
 **Multi-repo development workflow:**
-1. Start infrastructure: `cd trading_platform-infrastructure && docker-compose up -d`
-2. Start message queues: `cd trading_platform-kafka && docker-compose up -d`
+1. Start infrastructure: `cd investment_platform-infrastructure && docker-compose up -d`
+2. Start message queues: `cd investment_platform-kafka && docker-compose up -d`
 3. Start services: Each service in its own terminal/repo
-4. All services communicate via shared Docker network: `trading_platform_network`
+4. All services communicate via shared Docker network: `investment_platform_network`
 
 **Benefits of multi-repo approach:**
 - Independent deployments and versioning
@@ -912,38 +916,38 @@ npm run start:prod
 
 | Repository | Docker Compose File | Services Included | Ports |
 |------------|---------------------|-------------------|-------|
-| `trading_platform-infrastructure` | docker-compose.yml | TimescaleDB, PostgreSQL, Redis | 5432, 5433, 6379 |
-| `trading_platform-kafka` | docker-compose.yml | Zookeeper, Kafka (3 brokers), Kafka UI, Schema Registry | 2181, 9092-9094, 8080, 8081 |
-| `trading_platform-rabbitmq` | docker-compose.yml | RabbitMQ, Management UI | 5672, 15672 |
-| `trading_platform-monitoring` | docker-compose.yml | Prometheus, Grafana, Jaeger, Loki | 9090, 3000, 16686, 3100 |
-| `trading_platform-api-gateway` | docker-compose.yml | Kong/Traefik, Config DB | 8000, 8001, 8443 |
-| `trading_platform-mlflow` | docker-compose.yml | MLflow Server, MinIO (artifact store) | 5000, 9000 |
+| `investment_platform-infrastructure` | docker-compose.yml | TimescaleDB, PostgreSQL, Redis | 5432, 5433, 6379 |
+| `investment_platform-kafka` | docker-compose.yml | Zookeeper, Kafka (3 brokers), Kafka UI, Schema Registry | 2181, 9092-9094, 8080, 8081 |
+| `investment_platform-rabbitmq` | docker-compose.yml | RabbitMQ, Management UI | 5672, 15672 |
+| `investment_platform-monitoring` | docker-compose.yml | Prometheus, Grafana, Jaeger, Loki | 9090, 3000, 16686, 3100 |
+| `investment_platform-api-gateway` | docker-compose.yml | Kong/Traefik, Config DB | 8000, 8001, 8443 |
+| `investment_platform-mlflow` | docker-compose.yml | MLflow Server, MinIO (artifact store) | 5000, 9000 |
 
 **Microservice Repositories:**
 
 | Repository | Docker Compose File | gRPC Port | Language | Database |
 |------------|---------------------|-----------|----------|----------|
-| `trading_platform-market-data` | docker-compose.yml | 50051 | Python | TimescaleDB |
-| `trading_platform-analysis-engine` | docker-compose.yml | 50053 | Python | PostgreSQL + MLflow |
-| `trading_platform-portfolio-manager` | docker-compose.yml | 50052 | C++23 | PostgreSQL |
-| `trading_platform-recommendation-engine` | docker-compose.yml | 50054 | Python | PostgreSQL |
-| `trading_platform-notification-service` | docker-compose.yml | 50055 | Node.js | - |
-| `trading_platform-timeseries-analysis` | docker-compose.yml | 50056 | Python | PostgreSQL + MLflow |
+| `investment_platform-market-data` | docker-compose.yml | 50051 | Python | TimescaleDB |
+| `investment_platform-analysis-engine` | docker-compose.yml | 50053 | Python | PostgreSQL + MLflow |
+| `investment_platform-portfolio-manager` | docker-compose.yml | 50052 | C++23 | PostgreSQL |
+| `investment_platform-recommendation-engine` | docker-compose.yml | 50054 | Python | PostgreSQL |
+| `investment_platform-notification-service` | docker-compose.yml | 50055 | Node.js | - |
+| `investment_platform-timeseries-analysis` | docker-compose.yml | 50056 | Python | PostgreSQL + MLflow |
 
 **Shared Network Configuration:**
-All services must join the external Docker network `trading_platform_network`:
+All services must join the external Docker network `investment_platform_network`:
 
 ```yaml
 # In each docker-compose.yml
 networks:
   default:
     external: true
-    name: trading_platform_network
+    name: investment_platform_network
 ```
 
 **Create shared network once:**
 ```bash
-docker network create trading_platform_network
+docker network create investment_platform_network
 ```
 
 **Startup Order:**
@@ -987,7 +991,7 @@ cd ..
 **Important**: Always commit to the correct repository based on the type of change:
 - Database schemas/SQL → `Agora_SQL/`
 - Architecture docs/design specs → `Agora_Documentation/`
-- Service implementations → `trading_platform-<service-name>/`
+- Service implementations → `investment_platform-<service-name>/`
 
 ## Troubleshooting
 
@@ -1024,13 +1028,13 @@ docker logs timescaledb
 **Services can't communicate:**
 ```bash
 # Verify shared network exists
-docker network ls | grep trading_platform_network
+docker network ls | grep investment_platform_network
 
 # Create if missing
-docker network create trading_platform_network
+docker network create investment_platform_network
 
 # Verify service is connected
-docker network inspect trading_platform_network
+docker network inspect investment_platform_network
 ```
 
 ### Environment Variables Not Loading
