@@ -53,6 +53,13 @@ const signalConfig = {
   },
 }
 
+// Calculate percentage within a range, with division-by-zero protection
+function calcRangePercent(value: number, low: number, high: number): number {
+  const range = high - low
+  if (range === 0) return 50 // Default to middle if range is zero
+  return ((value - low) / range) * 100
+}
+
 export function SignalCard({ prediction, index }: SignalCardProps) {
   const config = signalConfig[prediction.signal]
   const SignalIcon = config.icon
@@ -62,6 +69,18 @@ export function SignalCard({ prediction, index }: SignalCardProps) {
 
   const timeSinceUpdate = Math.round(
     (Date.now() - new Date(prediction.lastUpdated).getTime()) / (1000 * 60)
+  )
+
+  // Pre-calculate range percentages with division-by-zero protection
+  const currentPricePercent = calcRangePercent(
+    prediction.currentPrice,
+    prediction.priceTarget.low,
+    prediction.priceTarget.high
+  )
+  const targetPricePercent = calcRangePercent(
+    prediction.priceTarget.mid,
+    prediction.priceTarget.low,
+    prediction.priceTarget.high
   )
 
   return (
@@ -183,24 +202,14 @@ export function SignalCard({ prediction, index }: SignalCardProps) {
           <motion.div
             className={`absolute inset-y-0 left-0 rounded-full ${config.rangeGradient}`}
             initial={{ width: 0 }}
-            animate={{
-              width: `${
-                ((prediction.currentPrice - prediction.priceTarget.low) /
-                  (prediction.priceTarget.high - prediction.priceTarget.low)) *
-                100
-              }%`,
-            }}
+            animate={{ width: `${currentPricePercent}%` }}
             transition={{ delay: 0.3 + index * 0.08, duration: 0.8 }}
           />
           {/* Target marker */}
           <motion.div
             className="absolute top-1/2 -translate-y-1/2 w-1 h-4 rounded-full"
             style={{
-              left: `${
-                ((prediction.priceTarget.mid - prediction.priceTarget.low) /
-                  (prediction.priceTarget.high - prediction.priceTarget.low)) *
-                100
-              }%`,
+              left: `${targetPricePercent}%`,
               background: config.markerColor,
             }}
             initial={{ opacity: 0, scale: 0 }}

@@ -43,13 +43,6 @@ export interface ModelPerformance {
   avgLossOnIncorrect: number
 }
 
-export interface PredictionHistoryPoint {
-  date: string
-  predictedPrice: number
-  actualPrice: number
-  wasCorrect: boolean
-}
-
 export interface SectorPrediction {
   sector: string
   sentiment: 'bullish' | 'bearish' | 'neutral'

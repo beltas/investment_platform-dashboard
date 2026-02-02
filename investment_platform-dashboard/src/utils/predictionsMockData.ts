@@ -1,7 +1,6 @@
 import type {
   ModelPrediction,
   ModelPerformance,
-  PredictionHistoryPoint,
   SectorPrediction,
 } from '../types/predictions'
 
@@ -274,32 +273,6 @@ export const sectorPredictions: SectorPrediction[] = [
     topPicks: ['JNJ'],
   },
 ]
-
-// Generate prediction history for a symbol
-export const generatePredictionHistory = (symbol: string): PredictionHistoryPoint[] => {
-  const history: PredictionHistoryPoint[] = []
-  const basePrice = modelPredictions.find(p => p.symbol === symbol)?.currentPrice || 100
-
-  for (let i = 90; i >= 0; i -= 3) {
-    const date = new Date()
-    date.setDate(date.getDate() - i)
-
-    const variance = (Math.random() - 0.5) * 0.1
-    const actualPrice = basePrice * (1 + variance * (90 - i) / 90)
-    const predictionError = (Math.random() - 0.5) * 0.08
-    const predictedPrice = actualPrice * (1 + predictionError)
-    const wasCorrect = Math.abs(predictionError) < 0.04
-
-    history.push({
-      date: date.toISOString().split('T')[0],
-      predictedPrice: Math.round(predictedPrice * 100) / 100,
-      actualPrice: Math.round(actualPrice * 100) / 100,
-      wasCorrect,
-    })
-  }
-
-  return history
-}
 
 // Summary statistics
 export const predictionSummary = {
